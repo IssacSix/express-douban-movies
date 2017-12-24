@@ -1,0 +1,16 @@
+{
+  "name": "test",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node-dev app.js"
+  },
+  "dependencies": {
+    "express": "~4.15.5",
+    "superagent": "^3.8.2",
+    "url": "^0.11.0"
+  },
+  "devDependencies": {
+    "cheerio": "^1.0.0-rc.2"
+  }
+}
