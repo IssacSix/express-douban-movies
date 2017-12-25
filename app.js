@@ -1,12 +1,13 @@
-var superagent = require('superagent')
-var express = require('express')
-var cheerio = require('cheerio')
-var Url = require('url')
-var app = express()
+const superagent = require('superagent')
+const async = require('async')
+const express = require('express')
+const cheerio = require('cheerio')
+const Url = require('url')
+const app = express()
 
 app.set('port',process.env.PORT || 8080);
 
-var entryUrl = 'https://movie.douban.com/top250'
+const entryUrl = 'https://movie.douban.com/top250'
 
 app.get('/', function(req, res, next) {
   var _res = res
@@ -15,23 +16,35 @@ app.get('/', function(req, res, next) {
     .end(function(err, res) {
       if (err) console.log(err)
       else {
-        var fullUrlsArr = []
+     
         getPageUrls(res.text).then(urls => {
-         
-          urls.forEach(function (url) {
-            superagent.get(url)
-              .end(function (err, res) {
-                if (err) console.log(err)
-                fullUrls(res.text).then(arrs => {
-                  for (i in arrs) {
-                    fullUrlsArr.push(arrs[i])
-                  }
+      
+          async.mapLimit(urls, 1, (url, cb) => {
+
+            setTimeout( () => {
+
+              superagent.get(url)
+                .end(function (err, res) {
+                  if (err) console.log(err)
+                  fullUrls(res.text).then(arrs => {
+                    cb(null, arrs)  
+                  })
                 })
-              })
+              
+            }, 3000)
+
+          }, (err, result) => {
+            _res.json({
+              code: 200,
+              des: 'success',
+              data: result
+            })
           })
-        console.log(fullUrlsArr)
+          
+        }).catch(res => {
+          console.log(res)
         })
-         
+
       }
     })
 
